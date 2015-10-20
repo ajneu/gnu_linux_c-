@@ -185,6 +185,25 @@ adduser Username sudo
 sudo tasksel  ## repeated spacebar selects/deselects
 ----
 
+=== Keeping your system up to date
+
+* apt-get
++
+[source,bash]
+----
+sudo apt-get update   &&   sudo apt-get -y upgrade   &&   sudo apt-get -y dist-upgrade   &&   sudo apt-get -y autoremove
+----
++
+_alternative_
++
+* aptitude (`sudo apt-get install aptitude`)
++
+[source,bash]
+----
+sudo aptitude update   &&   sudo aptitude -y upgrade   &&  sudo aptitude -y full-upgrade
+----
+
+
 === Fix up networking if you are behind a Windows Proxy (corporate firewall, NTLM, ...)
 
 Use cNTLM
@@ -251,5 +270,6 @@ Acquire::http::Proxy "http://localhost:3128";
 EOF'
 ----
 
-If `/etc/apt/apt.conf` exists, you can empty its contents to a single comment: `## see /etc/apt/apt.conf.d/95proxies`.
+If `/etc/apt/apt.conf` exists, you can empty its contents to a single comment: +
+`## see /etc/apt/apt.conf.d/95proxies`
 
