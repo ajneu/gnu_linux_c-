@@ -1,0 +1,255 @@
+= Using Debian GNU/Linux for C++ Development
+:icons: font
+:toc:
+:numbered:
+:sectlinks:
+:linkattrs:
+// Images and figures
+:figure-caption!:
+:source-highlighter: prettify
+//                   coderay highlightjs prettify pygments
+:coderay-linenums-mode: inline
+
+== Debian GNU/Linux
+
+Distributions:
+
+Debian Stable::
+Should be used for server applications
+
+Debian Testing::
+Recommended for a development workstation. It's usually stable enough, and you get the newest compilers and libraries. +
+(But you should know you're way around the console that you get when hitting Ctrl-F1; in case the Graphical Desktop Environment gets messed up, so that you can still store your work to usb, and can then safely reinstall the operating system).
+
+=== Installing Debian Testing
+
+Download Link:
+https://www.debian.org/CD/
+
+* Methods
++
+Method a)::
+Install _Debian Testing_ from iso-image (iso image regenerated weekly)
+Method b)::
+Install _Debian Stable_ from iso-image first; and then update to _Debian Testing_.
+
+Method b) is safer, since the installer is guaranteed to work. But Method a) is faster. +
+Below I'll outline Method b).
+
+* Note on Architecture:
++
+i386::
+is for 32-bit x86 processors or for 64-bit processors
+amd64::
+is for 64-bit processors (common today)
+
+==== Obtaining the ISO-image
+
+https://www.debian.org/CD/
+
+Jigdo or Http/Ftp Download ... +
+(Http/Ftp is easier but less flexible)
+
+Http or FTP Download::
+Download Link: https://www.debian.org/CD/http-ftp/
+
+Jigdo::
+To get the iso-image, I can recommend using a tool called jigdo (`sudo apt-get install jigdo-file`). +
+It downloads individual deb-packages and then constructs the iso-image. +
+Download Link: https://www.debian.org/CD/jigdo-cd/ +
+All you need is +
+`debian-x.y.z-arch-CD-1.jigdo` and +
+`debian-x.y.z-arch-CD-1.template` +
++
+Now download the iso-image with:
++
+[source,bash]
+----
+jigdo-lite  debian-x.y.z-arch-CD-1.jigdo
+----
++
+*Reusing deb-files from existing iso-images* +
+If you have old iso-images already, you can mount them, and then let jigdo search then for needed deb-packages: +
+often you'll find some unchanged packages from older Debian Releases that you can reuse.
++
+* Mount old iso-image:
++
+[source,bash]
+----
+sudo mkdir /mnt/deb_img1
+sudo mount -t iso9660 -o loop old_debian_image.iso /mnt/deb_img1
+----
+When jigdo-lite asks for "Files to scan", give it the mounted path from above `/mnt/deb_img1`
+
+==== Write ISO-image to USB and install new Operating System
+
+* Write ISO-image to USB stick
++
+See https://www.debian.org/CD/faq/#write-usb
++
+** If USB is automounted, then unmount first: `umount /media/Username/UsbLabel`
+** Note that to determine the device you can insert the USB stick and then hit `dmesg`: +
+Check if your system shows something like `/dev/sda...`, or `/dev/sdb...`, ... +
+and then copy the image to `/dev/sda`, or `/dev/sdb`, or ...
+** If you USB stick is stuffed up (the writing seems to take years...), then possibly do something like this first: +
+(This will format the USB stick... )
++
+[source,bash]
+----
+sudo fdisk /dev/sdx  ## /dev/sda or /dev/sdb or ...
+
+  p ## print the partition table
+
+  d ## delete a partition
+  d ## delete a partition
+  d ## until all deleted
+
+  p ## print the partition table (all emtpy)
+
+  n ## add a new partition
+    ## <Enter>
+    ## <Enter>
+    ## <Enter>
+
+  t ## change a partition type
+  b ## W95 FAT32
+
+  p ## print the partition table
+
+  w ## write table to disk and exit
+
+
+sudo mkfs -t vfat /dev/sdx1  ## /dev/sda1 or /dev/sdb1 or ...
+----
+** Copy:
++
+[source,bash]
+----
+sudo cp debian-x.y.z-arch-CD-1.iso /dev/sdx    ## where /dev/sdx is /dev/sda or /dev/sdb or ...
+----
+
+* Install Debian (Stable) Operating System from USB
+** Have USB stick attached and start PC (all the while hitting F12, Del -> to enter Boot Menu)
+** In Boot Menu, specify booting from USB
+** Exit Boot Menu
+** Install Debian, but no desktop environment yet
+
+* Change _Debian Stable_ to _Debian Testing_
+** In the freshly started OS, log on to the commandline
+** Change to root user, and change `/etc/apt/sources.list` from stable to the testing distribution as follows:
++
+[source,bash]
+----
+su -
+        ## enter root password
+nano /etc/apt/sources.list
+----
++
+&#8230; now change `/etc/apt/sources.list` to the following +
+and replace every occurrence of `stretch`, with the current codename for the testing distribution.
++
+[source]
+----
+deb     http://ftp.de.debian.org/debian/ stretch main contrib
+deb-src http://ftp.de.debian.org/debian/ stretch main contrib
+
+deb     http://security.debian.org/      stretch/updates main
+deb-src http://security.debian.org/      stretch/updates main
+
+deb     http://ftp.de.debian.org/debian/ stretch-updates main
+deb-src http://ftp.de.debian.org/debian/ stretch-updates main
+----
+** Update apt
++
+[source,bash]
+----
+apt-get update
+apt-get upgrade      ## I think this is not really necessary
+apt-get dist-upgrade
+----
++
+This will upgrade your system to testing!!
+
+* Install sudo and add your user to the sudo group
++
+[source,bash]
+----
+apt-get install sudo
+adduser Username sudo
+----
+
+* Install a Graphical Desktop Environment
++
+[source,bash]
+----
+sudo tasksel  ## repeated spacebar selects/deselects
+----
+
+=== Fix up networking if you are behind a Windows Proxy (corporate firewall, NTLM, ...)
+
+Use cNTLM
+[source,bash]
+----
+sudo apt-get install cntlm
+nano /etc/cntlm.conf
+sudo service cntlm restart
+----
+
+To use this, we need to set the environment variables `http_proxy`, `https_proxy` and `ftp_proxy` to all be `http://localhost:3128`.
+[source,bash]
+----
+export http_proxy=http://localhost:3128
+export https_proxy=$http_proxy
+export ftp_proxy=$http_proxy
+----
+
+Instead of typing this the whole time, we can create a file with those lines, which is always automatically sourced on login: +
+Create `/etc/profile.d/proxy`, so that environment variables  `http_proxy` and `https_proxy` are automatically set on login
+[source,bash]
+----
+# escaping:
+# note in the HEREDOC below, \\ means \ in the output!!
+#                            \$ means $ in the output!!
+#                            \` means ` in the output!!
+
+sudo su -c "cat <<EOF            > /etc/profile.d/proxy
+#!/usr/bin/env bash
+
+CNTLM_HOST=localhost
+CNTLM_PORT=3128
+export http_proxy=http://\${CNTLM_HOST}:\${CNTLM_PORT}
+export https_proxy=\$http_proxy
+export ftp_proxy=\$http_proxy
+EOF"
+----
+
+* Test:
+** Logout and log back in again
++
+[source,bash]
+----
+echo $http_proxy
+     ## should show http://localhost:3128
+
+printenv http_proxy
+     ## should show http://localhost:3128
+
+sudo printenv http_proxy
+     ## will show nothing
+     ## Therefore call sudo with -E:
+
+sudo -E printenv http_proxy       ## -E : preserve existing environment variables
+----
+
+For apt to use cntlm: create `/etc/apt/apt.conf.d/95proxies` as follows
+[source,bash]
+----
+sudo su -c 'cat <<EOF            >  /etc/apt/apt.conf.d/95proxies
+# Using cntlm proxy -- see /etc/cntlm.conf
+Acquire::ftp::Proxy  "http://localhost:3128";
+Acquire::http::Proxy "http://localhost:3128";
+EOF'
+----
+
+If `/etc/apt/apt.conf` exists, you can empty its contents to a single comment: `## see /etc/apt/apt.conf.d/95proxies`.
+
