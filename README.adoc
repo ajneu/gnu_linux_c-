@@ -3,23 +3,26 @@
 :toc:
 :numbered:
 :sectlinks:
-:linkattrs:
 // Images and figures
 :figure-caption!:
 :source-highlighter: prettify
 //                   coderay highlightjs prettify pygments
 :coderay-linenums-mode: inline
 
+Developing {cpp} applications under GNU/Linux, allows you to use top-level http://www.fsf.org/about/what-is-free-software[freedom-respecting] {cpp} compilers (gcc, clang) and numerous high-quality freedom-respecting libraries (Boost, Qt, etc.).
+
+Here I'll outline how to install the Debian _Testing_ distribution, which gives you fairly current versions of the compilers (as opposed to the Debian _Stable_ distribution, in which program-versions are lagging behind -- but _Stable_ is great for servers, production rolled-out systems, etc.)
+
 == Debian GNU/Linux
 
-Distributions:
+Distributions (https://www.debian.org/releases/):
 
-Debian Stable::
-Should be used for server applications
+* *Debian Stable* (https://www.debian.org/releases/stable/) +
+Should be used for server applications, production rolled-out systems, ...
 
-Debian Testing::
-Recommended for a development workstation. It's usually stable enough, and you get the newest compilers and libraries. +
-(But you should know your way around the console (that you get when hitting Ctrl-F1): in case the Graphical Desktop Environment gets messed up, you can then still store your work to usb, and then safely reinstall the operating system).
+* *Debian Testing* (https://www.debian.org/releases/testing/) +
+This is an option for a development workstation. It's usually stable enough, and you get the newest compilers and libraries. +
+(But you should know your way around the virtual console (that you get when hitting Ctrl-F1): in case the Graphical Desktop Environment gets messed up, you can then still store your work to usb, and then safely reinstall the operating system).
 
 === Installing Debian Testing
 
@@ -27,31 +30,30 @@ Download Link:
 https://www.debian.org/CD/
 
 * Methods
-+
-Method a)::
+** *Method a)* +
 Install _Debian Testing_ from iso-image (iso image regenerated weekly)
-Method b)::
+** *Method b)* +
 Install _Debian Stable_ from iso-image first; and then update to _Debian Testing_.
 
 Method b) is safer, since the installer is guaranteed to work. But Method a) is faster. +
 Below I'll outline Method b).
 
 * Note on Architecture:
-+
-i386::
+** *i386* +
 is for 32-bit x86 processors or for 64-bit processors
-amd64::
+** *amd64* +
 is for 64-bit processors (common today)
 
 ==== Obtaining the ISO-image
 
-https://www.debian.org/CD/
-
-Jigdo or Http/Ftp Download ... +
+You have options between Jigdo or Http/Ftp Download ... +
 (Http/Ftp is easier but less flexible)
 
+https://www.debian.org/CD/ see below for details
+
 Http or FTP Download::
-Download Link: https://www.debian.org/CD/http-ftp/
+Download Link: https://www.debian.org/CD/http-ftp/ +
+(You need only a single CD or DVD; because whatever else you want can be obtained via APT [Advanced Packaging Tool], once the base system is installed)
 
 Jigdo::
 To get the iso-image, I can recommend using a tool called jigdo (`sudo apt-get install jigdo-file`). +
@@ -84,7 +86,7 @@ scanMenu=''
 +
 *Reusing deb-files from existing iso-images* +
 If you have old iso-images already, you can mount them, and then let jigdo search then for needed deb-packages: +
-often you'll find some unchanged packages from older Debian Releases that you can reuse.
+often jigdeo will find some unchanged packages from older Debian Releases that it can reuse.
 +
 * Mount old iso-image:
 +
@@ -105,11 +107,19 @@ See https://www.debian.org/CD/faq/#write-usb
 ** Note that to determine the device you can insert the USB stick and then hit `dmesg`: +
 Check if your system shows something like `/dev/sda...`, or `/dev/sdb...`, ... +
 and then copy the image to `/dev/sda`, or `/dev/sdb`, or ...
+** Copy ISO-image to USB:
++
+[source,bash]
+----
+sudo cp debian-x.y.z-arch-CD-1.iso /dev/sdx    ## where /dev/sdx is /dev/sda or /dev/sdb or ...
+----
 ** If you USB stick is stuffed up (the writing seems to take years...), then possibly do something like this first: +
 (This will format the USB stick... )
 +
 [source,bash]
 ----
+## this will format the USB stick - do only if necessary
+
 sudo fdisk /dev/sdx  ## /dev/sda or /dev/sdb or ...
 
   p ## print the partition table
@@ -121,6 +131,7 @@ sudo fdisk /dev/sdx  ## /dev/sda or /dev/sdb or ...
   p ## print the partition table (all emtpy)
 
   n ## add a new partition
+  p ## primary
     ## <Enter>
     ## <Enter>
     ## <Enter>
@@ -135,18 +146,24 @@ sudo fdisk /dev/sdx  ## /dev/sda or /dev/sdb or ...
 
 sudo mkfs -t vfat /dev/sdx1  ## /dev/sda1 or /dev/sdb1 or ...
 ----
-** Copy:
-+
-[source,bash]
-----
-sudo cp debian-x.y.z-arch-CD-1.iso /dev/sdx    ## where /dev/sdx is /dev/sda or /dev/sdb or ...
-----
 
 * Install Debian (Stable) Operating System from USB
 ** Have USB stick attached and start PC (all the while hitting F12, Del -> to enter Boot Menu)
 ** In Boot Menu, specify booting from USB
 ** Exit Boot Menu
-** Install Debian, but no desktop environment yet
+** Install Debian, but no desktop environment yet (we'll add that later)
+** Boot into your new (command-line) system
+** Upgrade and check networking
++
+[source, bash]
+----
+su -
+        ## enter root password
+apt-get update     ## fetch newest package lists
+apt-get upgrade    ## upgrade all already-installed packages, if the lists show newer versions thereof
+----
++
+If apt-get does not work, and your're behind a windows proxy or firewall, then see <<_fix_up_with_cntlm, the section of cNTLM>>.
 
 * Change _Debian Stable_ to _Debian Testing_
 ** In the freshly started OS, log on to the commandline
@@ -160,15 +177,15 @@ nano /etc/apt/sources.list
 ----
 +
 &#8230; now change `/etc/apt/sources.list` to the following +
-and replace every occurrence of `stretch`, with the current codename for the testing distribution.
+and replace every occurrence of `stretch`, with the current https://www.debian.org/releases/testing/[codename for the testing distribution] (at the time of writing it was "stretch", but it may well be "buster", ... by the time you read this).
 +
 [source]
 ----
 deb     http://httpredir.debian.org/debian stretch main contrib
 deb-src http://httpredir.debian.org/debian stretch main contrib
 
-deb     http://security.debian.org/      stretch/updates main
-deb-src http://security.debian.org/      stretch/updates main
+deb     http://security.debian.org/        stretch/updates main
+deb-src http://security.debian.org/        stretch/updates main
 
 deb     http://httpredir.debian.org/debian stretch-updates main
 deb-src http://httpredir.debian.org/debian stretch-updates main
@@ -177,9 +194,9 @@ deb-src http://httpredir.debian.org/debian stretch-updates main
 +
 [source,bash]
 ----
-apt-get update
-apt-get upgrade      ## I think this is not really necessary
-apt-get dist-upgrade
+apt-get update         ## fetch newest package lists
+apt-get upgrade        ## upgrade all already-installed packages, if the lists show newer versions thereof
+apt-get dist-upgrade   ## allow upgrades to packages from the new distribution
 ----
 +
 This will upgrade your system to testing!!
@@ -217,16 +234,101 @@ _alternative_
 sudo aptitude update   &&   sudo aptitude -y upgrade   &&  sudo aptitude -y full-upgrade
 ----
 
-
+[[_fix_up_with_cntlm]]
 === Fix up networking if you are behind a Windows Proxy (corporate company proxy, firewall, NTLM, ...)
 
-Use cNTLM
+Install cNTLM!
+
+cNTLM is a proxy on your computer (`localhost`), to which you connect; and which enables seamless communication with the windows proxy.
+
+[source]
+----
+
+|--------------------------------------------------|
+|                     GNU/Linux                    |
+|                                                  |
+|  ------------------              ----------      |           -----------------
+|  | normal program |              |  cntlm |------------------| Windows Proxy |
+|  |  e.g. wget     |              ----------      |           -----------------
+|  ------------------              host: localhost |            host:     ...
+|                                  port: 3128      |            port:     ...
+|                                                  |            username: ...
+| http_proxy=http://localhost:3128                 |            password: ...
+|--------------------------------------------------|
+
+----
+
+Before installing cNTLM, there are 2 possibilities:
+
+* On some windows-networks, GNU/Linux networking will not work at all: `sudo apt-get update` will fail. In that case you must download the cNTLM deb-package from a different computer and transfer it to the target-computer with a usb stick. See <<_install_cntlm_with_usb>>.
+* On other windows-networks, basic GNU/Linux networking will work +
+with `/etc/apt/apt.conf` having something like
++
+[source]
+----
+Acquire::ftp::Proxy  "http://username:pass@host:port";
+Acquire::http::Proxy "http://username:pass@host:port";
+----
++
+In this case you can use `apt-get` to get cntlm. See <<_install_cntlm_via_apt>>.
+
+[[_install_cntlm_with_usb]]
+==== Installing cNTLM via USB (deb package)
+
+If you network does not work (`sudo apt-get update` does not work), then you have to load the deb package for cntlm from another PC and copy it to the target-PC via USB:
+
+https://packages.debian.org/testing/cntlm
+
+Underneath the textinput field you can select your distribution.
+
+At the bottom of the page you'll find a heading "Download cntlm", followed by a table listing different architectures. Click on the architecture that you need (e.g. `amd64`, or `i386`). +
+On the new page... download the deb file `cntlm_x.y.z-w_amd64.deb`
+
+Load `cntlm_x.y.z-w_amd64.deb` onto a usb stick.
+
+Mount it on your target-PC.
+
+[source,bash]
+----
+sudo mkdir           /mnt/usb
+
+## insert usb and find it's device (/dev/sdb1, or /dev/sda1, or...) at the end of the output of the command:  dmesg
+sudo mount /dev/sdx1 /mnt/usb  ## e.g. sudo mount /dev/sdb1 /mnt/usb
+
+## install cntlm
+sudo dpkg -i /mnt/usb/cntlm_x.y.z-w_amd64.deb
+
+## unmount usb
+sudo umount /mnt/usb
+----
+
+Now continue with <<_configure_cntlm_conf>>.
+
+[[_install_cntlm_via_apt]]
+==== Installing cNTLM via APT
+
+If networking works (`sudo apt-get update` works), then you can install cNTLM from the commandline
+
 [source,bash]
 ----
 sudo apt-get install cntlm
+----
+
+[[_configure_cntlm_conf]]
+==== Configure `/etc/cntlm.conf`
+
+[source,bash]
+----
 nano /etc/cntlm.conf
+----
+
+Now restart `cntlm`:
+[source,bash]
+----
 sudo service cntlm restart
 ----
+
+
 
 To use this, we need to set the environment variables `http_proxy`, `https_proxy` and `ftp_proxy` to all be `http://localhost:3128`.
 [source,bash]
@@ -245,7 +347,7 @@ Create `/etc/profile.d/proxy`, so that environment variables  `http_proxy` and `
 #                            \$ means $ in the output!!
 #                            \` means ` in the output!!
 
-sudo su -c 'cat <<EOF            > /etc/profile.d/proxy
+sudo su -c 'cat <<EOF            > /etc/profile.d/proxy.sh
 #!/usr/bin/env bash
 
 CNTLM_HOST=localhost
