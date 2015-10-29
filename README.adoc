@@ -26,9 +26,6 @@ This is an option for a development workstation. It's usually stable enough, and
 
 === Installing Debian Testing
 
-Download Link:
-https://www.debian.org/CD/
-
 * Methods
 ** *Method a)* +
 Install _Debian Testing_ from iso-image (iso image regenerated weekly)
@@ -47,13 +44,13 @@ is for 64-bit processors (common today)
 ==== Obtaining the ISO-image
 
 You have options between Jigdo or Http/Ftp Download ... +
-(Http/Ftp is easier but less flexible)
+(Http/Ftp is easier)
 
 https://www.debian.org/CD/ see below for details
 
 Http or FTP Download::
 Download Link: https://www.debian.org/CD/http-ftp/ +
-(You need only a single CD or DVD; because whatever else you want can be obtained via APT [Advanced Packaging Tool], once the base system is installed)
+(You need only a single CD; because whatever else you want can be obtained via APT [Advanced Packaging Tool], once the base system is installed)
 
 Jigdo::
 To get the iso-image, I can recommend using a tool called jigdo (`sudo apt-get install jigdo-file`). +
@@ -71,7 +68,7 @@ jigdo-lite  debian-x.y.z-arch-CD-1.jigdo
 ----
 +
 *Setting ~/.jigdo-lite* +
-Once downloads have started with jigdo, you can stop with (Ctrl-C) and then resume again. If you've download a bit already, jigdo will have created the file `~/.jigdo-lite`. Its recommended to edit this file (to *increase the `timeout`*), particularly if you're behind a corporate company proxy or firewall:
+Once downloads have started with jigdo, you can stop with (Ctrl-C) and then start it again, which will resume. If you've download a bit already, jigdo will have created the file `~/.jigdo-lite`. Its recommended to edit this file (to *increase the `timeout`*), particularly if you're behind a corporate company proxy or firewall:
 +
 [source,bash]
 ----
@@ -85,8 +82,8 @@ scanMenu=''
 ----
 +
 *Reusing deb-files from existing iso-images* +
-If you have old iso-images already, you can mount them, and then let jigdo search then for needed deb-packages: +
-often jigdeo will find some unchanged packages from older Debian Releases that it can reuse.
+If you have old iso-images already, you can mount them, and then let jigdo search them for needed deb-packages: +
+often jigdo will find some unchanged packages from older Debian Releases that it can reuse.
 +
 * Mount old iso-image:
 +
@@ -103,17 +100,18 @@ When jigdo-lite asks for "Files to scan", give it the mounted path from above `/
 +
 See https://www.debian.org/CD/faq/#write-usb
 +
+** Insert USB stick
 ** If USB is automounted, then unmount first: `umount /media/Username/UsbLabel`
-** Note that to determine the device you can insert the USB stick and then hit `dmesg`: +
+** Note that to determine the device (needed in the next step) you can insert the USB stick and then hit `dmesg`: +
 Check if your system shows something like `/dev/sda...`, or `/dev/sdb...`, ... +
 and then copy the image to `/dev/sda`, or `/dev/sdb`, or ...
-** Copy ISO-image to USB:
+** Copy ISO-image to USB-device:
 +
 [source,bash]
 ----
 sudo cp debian-x.y.z-arch-CD-1.iso /dev/sdx    ## where /dev/sdx is /dev/sda or /dev/sdb or ...
 ----
-** If you USB stick is stuffed up (the writing seems to take years...), then possibly do something like this first: +
+** If your USB stick is stuffed up (the writing seems to take years...), then possibly do something like this first: +
 (This will format the USB stick... )
 +
 [source,bash]
@@ -163,7 +161,7 @@ apt-get update     ## fetch newest package lists
 apt-get upgrade    ## upgrade all already-installed packages, if the lists show newer versions thereof
 ----
 +
-If apt-get does not work, and your're behind a windows proxy or firewall, then see <<_fix_up_with_cntlm, the section of cNTLM>>.
+If apt-get does not work, because of networking problems, then the reason may be that your're behind a windows company proxy or firewall. In that case see <<_fix_up_with_cntlm, the section of cNTLM>>.
 
 * Change _Debian Stable_ to _Debian Testing_
 ** In the freshly started OS, log on to the commandline
@@ -329,8 +327,7 @@ sudo service cntlm restart
 ----
 
 
-
-To use this, we need to set the environment variables `http_proxy`, `https_proxy` and `ftp_proxy` to all be `http://localhost:3128`.
+cntlm is itself a proxy on the local system. To use this, we need to set the environment variables `http_proxy`, `https_proxy` and `ftp_proxy` to all be `http://localhost:3128`.
 [source,bash]
 ----
 export http_proxy=http://localhost:3128
@@ -339,7 +336,7 @@ export ftp_proxy=$http_proxy
 ----
 
 Instead of typing this the whole time, we can create a file with those lines, which is always automatically sourced on login: +
-Create `/etc/profile.d/proxy`, so that environment variables  `http_proxy` and `https_proxy` are automatically set on login
+Create `/etc/profile.d/proxy.sh`, so that environment variables  `http_proxy` and `https_proxy` are automatically set on login
 [source,bash]
 ----
 # escaping:
@@ -357,7 +354,7 @@ export https_proxy=\$http_proxy
 export ftp_proxy=\$http_proxy
 EOF'
 ----
-(view the generated file with `cat /etc/profile.d/proxy`)
+(view the generated file with `cat /etc/profile.d/proxy.sh`)
 
 * Test:
 ** Logout and log back in again
