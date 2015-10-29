@@ -357,7 +357,7 @@ export https_proxy=\$http_proxy
 export ftp_proxy=\$http_proxy
 EOF'
 ----
-(view the generated file with `cat /etc/profile.d/proxy.sh`)
+(view the generated file with `cat /etc/profile.d/proxy.sh`, or see link:debian_conf/with_cntlm/etc/profile.d/proxy.sh[here])
 
 * Test:
 ** Logout and log back in again
@@ -386,7 +386,7 @@ Acquire::ftp::Proxy  "http://localhost:3128";
 Acquire::http::Proxy "http://localhost:3128";
 EOF'
 ----
-(view the generated file with `cat /etc/apt/apt.conf.d/95proxies`)
+(view the generated file with `cat /etc/apt/apt.conf.d/95proxies`; or see link:debian_conf/with_cntlm/etc/apt/apt.conf.d/95proxies[here])
 
 If `/etc/apt/apt.conf` exists, you can empty its contents to a single comment: +
 `## see /etc/apt/apt.conf.d/95proxies`
