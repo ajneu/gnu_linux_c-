@@ -1,0 +1,11 @@
+# Using cntlm proxy -- see /etc/cntlm.conf
+Acquire::ftp::Proxy  "http://localhost:3128";
+Acquire::http::Proxy "http://localhost:3128";
+#Acquire::http::Retries "4";
+#Acquire::http::timeout "15";
+
+###
+###
+# Acquire::ftp::Proxy  "http://user:THEPASSWORD@192.1.1.5:3128";
+# Acquire::http::Proxy "http://user:THEPASSWORD@192.1.1.5:3128";
+# # if using this... be sure to secure this file to root-readable only (600)!

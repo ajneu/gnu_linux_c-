@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+~/Qt5.5.1/Tools/QtCreator/bin/qtcreator.sh

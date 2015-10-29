@@ -1,0 +1,10 @@
+## This is only needed if you're running XFCE
+## In that case uncomment the stuff below
+
+# if [ -f /etc/profile ] ; then
+#     .   /etc/profile
+# fi
+
+# if [ -f ~/.profile ] ; then
+#     .   ~/.profile
+# fi

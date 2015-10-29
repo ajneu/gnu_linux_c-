@@ -50,7 +50,8 @@ https://www.debian.org/CD/ see below for details
 
 Http or FTP Download::
 Download Link: https://www.debian.org/CD/http-ftp/ +
-(You need only a single CD; because whatever else you want can be obtained via APT [Advanced Packaging Tool], once the base system is installed)
+(You need only a single CD; because whatever else you want can be obtained via APT [Advanced Packaging Tool], once the base system is installed). +
+Download _Stable_ (later you'll see how to upgrade to _Testing_)
 
 Jigdo::
 To get the iso-image, I can recommend using a tool called jigdo (`sudo apt-get install jigdo-file`). +
@@ -59,6 +60,7 @@ Download Link: https://www.debian.org/CD/jigdo-cd/ +
 All you need is +
 `debian-x.y.z-arch-CD-1.jigdo` and +
 `debian-x.y.z-arch-CD-1.template` +
+Download _Stable_ (later you'll see how to upgrade to _Testing_) +
 +
 Now download the iso-image with:
 +
@@ -102,9 +104,9 @@ See https://www.debian.org/CD/faq/#write-usb
 +
 ** Insert USB stick
 ** If USB is automounted, then unmount first: `umount /media/Username/UsbLabel`
-** Note that to determine the device (needed in the next step) you can insert the USB stick and then hit `dmesg`: +
+** Note that to determine the device (needed in the next step), hit `dmesg` after having inserted the USB-stick: +
 Check if your system shows something like `/dev/sda...`, or `/dev/sdb...`, ... +
-and then copy the image to `/dev/sda`, or `/dev/sdb`, or ...
+and then copy the image to the device `/dev/sda`, or `/dev/sdb`, or ... as follows:
 ** Copy ISO-image to USB-device:
 +
 [source,bash]
@@ -144,7 +146,8 @@ sudo fdisk /dev/sdx  ## /dev/sda or /dev/sdb or ...
 
 sudo mkfs -t vfat /dev/sdx1  ## /dev/sda1 or /dev/sdb1 or ...
 ----
-
++
+Also make sure that the USB stick is unmounted.
 * Install Debian (Stable) Operating System from USB
 ** Have USB stick attached and start PC (all the while hitting F12, Del -> to enter Boot Menu)
 ** In Boot Menu, specify booting from USB
@@ -275,7 +278,7 @@ In this case you can use `apt-get` to get cntlm. See <<_install_cntlm_via_apt>>.
 
 If you network does not work (`sudo apt-get update` does not work), then you have to load the deb package for cntlm from another PC and copy it to the target-PC via USB:
 
-https://packages.debian.org/testing/cntlm
+https://packages.debian.org/stable/cntlm
 
 Underneath the textinput field you can select your distribution.
 
@@ -387,4 +390,3 @@ EOF'
 
 If `/etc/apt/apt.conf` exists, you can empty its contents to a single comment: +
 `## see /etc/apt/apt.conf.d/95proxies`
-

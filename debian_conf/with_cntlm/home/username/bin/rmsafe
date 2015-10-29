@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+echo "Are you sure you want to delete"
+echo "    $@"
+echo "? [y/N]"
+
+read DO_DEL
+if  [[ $DO_DEL == "y" ]]; then
+    rm -rf "$@"
+else
+    echo "aborted"
+fi

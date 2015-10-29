@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+## remove files ending with ~
+
+x () {
+    local ARG="$1"
+    echo "$ARG"
+    eval $ARG &>/dev/null  # execute command
+    }
+
+x    "rm *~   ## remove *~"
