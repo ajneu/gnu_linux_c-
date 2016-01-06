@@ -164,7 +164,7 @@ apt-get update     ## fetch newest package lists
 apt-get upgrade    ## upgrade all already-installed packages, if the lists show newer versions thereof
 ----
 +
-If apt-get does not work, because of networking problems, then the reason may be that your're behind a windows company proxy or firewall. In that case see <<_fix_up_with_cntlm, the section of cNTLM>>.
+If apt-get does not work, because of networking problems, then the reason may be that your're behind a windows company proxy or firewall. In that case see <<_fix_up_with_cntlm, the section of fixing up networking (cNTLM etc.)>>.
 
 * Change _Debian Stable_ to _Debian Testing_
 ** In the freshly started OS, log on to the commandline
@@ -217,6 +217,27 @@ adduser Username sudo
 sudo tasksel  ## repeated spacebar selects/deselects
 ----
 
+=== Your monitor needs a proprietary driver?
+
+If the graphics does not seem to work, you might have a monitor that needs a proprietry driver. +
+Don't support products that come with a "secret" driver, that people can neither inspect nor change. +
+But if you still really want to use it, then you might e.g. need the package `firmware-linux-nonfree` from the `non-free` section.
+
+Hit Ctrl-Alt-F1 and log in to the virtual terminal.
+
+Edit `/etc/apt/sources.list` to include the `non-free` section:
+[source]
+----
+deb     http://httpredir.debian.org/debian stretch main contrib non-free
+----
+
+Then issue these commands:
+[source,bash]
+----
+apt-get update
+apt-get install firmware-linux-nonfree
+----
+
 === Keeping your system up to date
 
 * apt-get
@@ -235,10 +256,30 @@ _alternative_
 sudo aptitude update   &&   sudo aptitude -y upgrade   &&  sudo aptitude -y full-upgrade
 ----
 
+=== Networking
+
+Have a look at `/etc/network/interfaces` and `/etc/NetworkManager/NetworkManager.conf`. +
+In particular, you might want to set `managed=true` in `/etc/NetworkManager/NetworkManager.conf` (see https://wiki.debian.org/NetworkManager#Wired_Networks_are_Unmanaged[here]).
+
 [[_fix_up_with_cntlm]]
 === Fix up networking if you are behind a Windows Proxy (corporate company proxy, firewall, NTLM, ...)
 
-Install cNTLM!
+==== Avoid `apt-get` "Hash Sum Mismatch" errors, behind windows proxies
+
+Windows proxies can be rather messed up (in terms of their protocol implementation) and not work smoothly with APT. +
+Just assume you've got a bad proxy, and get it to work by +
+creating the file `/etc/apt/apt.conf.d/99fixbadproxy` with the following content:
+
+[source]
+----
+Acquire::http::Pipeline-Depth 0;
+Acquire::http::No-Cache true;
+Acquire::BrokenProxy    true;
+----
+
+If your proxy is not broken, you can still use these settings. They should not cause problems.
+
+==== Install cNTLM!
 
 cNTLM is a proxy on your computer (`localhost`), to which you connect; and which enables seamless communication with the windows proxy.
 
@@ -274,7 +315,7 @@ Acquire::http::Proxy "http://username:pass@host:port";
 In this case you can use `apt-get` to get cntlm. See <<_install_cntlm_via_apt>>.
 
 [[_install_cntlm_with_usb]]
-==== Installing cNTLM via USB (deb package)
+===== Installing cNTLM via USB (deb package)
 
 If you network does not work (`sudo apt-get update` does not work), then you have to load the deb package for cntlm from another PC and copy it to the target-PC via USB:
 
@@ -306,7 +347,7 @@ sudo umount /mnt/usb
 Now continue with <<_configure_cntlm_conf>>.
 
 [[_install_cntlm_via_apt]]
-==== Installing cNTLM via APT
+===== Installing cNTLM via APT
 
 If networking works (`sudo apt-get update` works), then you can install cNTLM from the commandline
 
@@ -316,7 +357,7 @@ sudo apt-get install cntlm
 ----
 
 [[_configure_cntlm_conf]]
-==== Configure `/etc/cntlm.conf`
+===== Configure `/etc/cntlm.conf`
 
 [source,bash]
 ----
