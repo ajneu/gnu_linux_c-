@@ -2,3 +2,4 @@
 
 export PATH=~/Qt5.5.1/5.5/gcc_64/bin:$PATH
 #export PATH=~/Qt5.5.1/5.5/gcc_64/bin:~/Qt5.5.1/Tools/QtCreator/bin:$PATH
+export LD_LIBRARY_PATH=~/Qt5.5.1/5.5/gcc_64/lib:$LD_LIBRARY_PATH
